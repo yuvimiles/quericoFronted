@@ -5,7 +5,7 @@ import postService, { PostWithAuthor } from '../services/post-service';
 import authService from '../services/auth-service';
 import { User } from '../types/user-type';
 import PostCard from '../components/postCard';
-import ProfileEditModal from '../components/ProfileEdit';
+import ProfileEditModal from './ProfileEdit';
 
 const Profile: React.FC = () => {
   const { userId } = useParams<{ userId?: string }>();
