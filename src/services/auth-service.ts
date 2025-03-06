@@ -96,16 +96,11 @@ const clearAuth = () => {
 // התחברות באמצעות Google
 const loginWithGoogle = () => {
   // שימוש בכתובת בסיסית במקום apiClient.defaults.baseURL אם הוא לא זמין
-  const baseURL = "http://localhost:5000/api"; // או כל כתובת אחרת רלוונטית
+  const baseURL = "http://localhost:5000/"; // או כל כתובת אחרת רלוונטית
   window.location.href = `${baseURL}/auth/google`;
 };
 
-// התחברות באמצעות Facebook
-const loginWithFacebook = () => {
-  // שימוש בכתובת בסיסית במקום apiClient.defaults.baseURL אם הוא לא זמין
-  const baseURL = "http://localhost:5000/api"; // או כל כתובת אחרת רלוונטית
-  window.location.href = `${baseURL}/auth/facebook`;
-};
+
 
 const authService = {
   login,
@@ -117,8 +112,7 @@ const authService = {
   getToken,
   isAuthenticated,
   clearAuth,
-  loginWithGoogle,
-  loginWithFacebook
+  loginWithGoogle
 };
 
 export default authService;
