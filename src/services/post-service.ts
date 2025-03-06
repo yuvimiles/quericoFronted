@@ -1,5 +1,5 @@
 import apiClient, { CanceledError } from "./api";
-import { IComment } from "../types/user-type";
+import { IComment, ICommentWithAuthor } from "../types/user-type";
 
 export { CanceledError };
 
@@ -120,7 +120,7 @@ const deletePost = (postId: string) => {
 // הוספת תגובה לפוסט
 const addComment = (postId: string, text: string) => {
   const controller = new AbortController();
-  const request = apiClient.post<IComment>(`/posts/${postId}/comments`, { text }, {
+  const request = apiClient.post<ICommentWithAuthor>(`/posts/${postId}/comments`, { text }, {
     signal: controller.signal
   });
   
@@ -130,7 +130,7 @@ const addComment = (postId: string, text: string) => {
 // קבלת תגובות לפוסט
 const getPostComments = (postId: string) => {
   const controller = new AbortController();
-  const request = apiClient.get<IComment[]>(`/posts/${postId}/comments`, {
+  const request = apiClient.get<ICommentWithAuthor[]>(`/posts/${postId}/comments`, {
     signal: controller.signal
   });
   
