@@ -12,7 +12,6 @@ interface AuthContextType {
   register: (username: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   loginWithGoogle: () => void;
-  loginWithFacebook: () => void;
   clearError: () => void;
 }
 
@@ -122,9 +121,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     authService.loginWithGoogle();
   };
 
-  const loginWithFacebook = () => {
-    authService.loginWithFacebook();
-  };
 
   // Clear error function
   const clearError = () => {
@@ -141,7 +137,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     register,
     logout,
     loginWithGoogle,
-    loginWithFacebook,
     clearError
   };
 

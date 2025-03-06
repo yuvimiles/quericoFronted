@@ -4,7 +4,7 @@ import axios, { CanceledError } from "axios";
 export { CanceledError };
 
 // הגדרת המשתנה הסביבתי או ברירת מחדל אם חסר
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/";
 
 // יצירת מופע axios עם הגדרות בסיסיות
 const apiClient = axios.create({
