@@ -4,7 +4,7 @@ export interface User {
     username: string;
     email: string;
     password: string;
-    profileImage: string;
+    profilePicture: string;
     googleId?: string;
     refreshToken?: string;
     createdAt?: Date;

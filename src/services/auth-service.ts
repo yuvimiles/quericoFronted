@@ -5,12 +5,12 @@ export { CanceledError };
 
 // הגדרת ממשקים 
 export interface LoginRequest {
-  username: string;
+  email: string;
   password: string;
 }
 
 export interface RegisterRequest {
-  username: string;
+  name: string;
   email: string;
   password: string;
 }
@@ -96,7 +96,8 @@ const clearAuth = () => {
 // התחברות באמצעות Google
 const loginWithGoogle = () => {
   // שימוש בכתובת בסיסית במקום apiClient.defaults.baseURL אם הוא לא זמין
-  const baseURL = "http://localhost:5000/"; // או כל כתובת אחרת רלוונטית
+  const baseURL = "http://localhost:5000"; // או כל כתובת אחרת רלוונטית
+  
   window.location.href = `${baseURL}/auth/google`;
 };
 

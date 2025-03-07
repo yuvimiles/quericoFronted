@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/auth-service';
 
 const Register: React.FC = () => {
-  const [username, setUsername] = useState('');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -21,7 +21,7 @@ const Register: React.FC = () => {
     e.preventDefault();
     
     // Basic validation
-    if (!username.trim() || !email.trim() || !password || !confirmPassword) {
+    if (!name.trim() || !email.trim() || !password || !confirmPassword) {
       setError('Please fill in all fields');
       return;
     }
@@ -45,7 +45,7 @@ const Register: React.FC = () => {
       setLoading(true);
       setError('');
       
-      const { request } = authService.register({ username, email, password });
+      const { request } = authService.register({ name, email, password });
       const response = await request;
       
       authService.saveAuth(response.data);
@@ -77,14 +77,14 @@ const Register: React.FC = () => {
         
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="username" className="block text-gray-700 mb-2">Username</label>
+            <label htmlFor="name" className="block text-gray-700 mb-2">name</label>
             <input
               type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter username"
+              placeholder="Enter name"
               disabled={loading}
             />
           </div>

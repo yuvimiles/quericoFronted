@@ -5,7 +5,7 @@ import { Form, Button, Container, Card, Alert, Spinner } from 'react-bootstrap';
 import googleIcon from "../assets/google-icon.png";
 
 const Login: React.FC = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -15,7 +15,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!username.trim() || !password.trim()) {
+    if (!email.trim() || !password.trim()) {
       setError('Please fill in all fields');
       return;
     }
@@ -24,7 +24,7 @@ const Login: React.FC = () => {
       setLoading(true);
       setError('');
 
-      const { request } = authService.login({ username, password });
+      const { request } = authService.login({ email, password });
       const response = await request;
 
       authService.saveAuth(response.data);
@@ -51,12 +51,12 @@ const Login: React.FC = () => {
 
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
-              <Form.Label>Username</Form.Label>
+              <Form.Label>Email</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter your username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
               />
             </Form.Group>

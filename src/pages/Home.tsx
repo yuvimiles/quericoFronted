@@ -9,7 +9,8 @@ const Home: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  
+
+
   const fetchPosts = async (pageNumber: number = 1) => {
     try {
       setLoading(true);

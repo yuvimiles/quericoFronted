@@ -42,6 +42,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
       const currentUser = authService.getCurrentUser();
+      console.log(currentUser);
       
       if (currentUser && authService.isAuthenticated()) {
         setUser(currentUser);
@@ -67,12 +68,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   // Login function
-  const login = async (username: string, password: string) => {
+  const login = async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const { request } = authService.login({ username, password });
+      const { request } = authService.login({ email, password });
       const response = await request;
       
       authService.saveAuth(response.data);
@@ -86,12 +87,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   // Register function
-  const register = async (username: string, email: string, password: string) => {
+  const register = async (name:string , email: string, password: string) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const { request } = authService.register({ username, email, password });
+      const { request } = authService.register({name ,email, password });
       const response = await request;
       
       authService.saveAuth(response.data);
