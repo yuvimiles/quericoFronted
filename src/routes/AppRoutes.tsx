@@ -33,7 +33,13 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   return <>{children}</>;
 };
 
-const AppRoutes: React.FC = () => {
+// AppRoutes now receives the toggle function and dark mode state
+interface AppRoutesProps {
+  handleToggle: () => void;
+  isDarkMode: boolean;
+}
+
+const AppRoutes: React.FC<AppRoutesProps> = ({ handleToggle, isDarkMode }) => {
   return (
     <Routes>
       {/* Auth routes */}
@@ -45,7 +51,7 @@ const AppRoutes: React.FC = () => {
         path="/"
         element={
           <PrivateRoute>
-            <Layout>
+            <Layout handleToggle={handleToggle} isDarkMode={isDarkMode}>
               <Home />
             </Layout>
           </PrivateRoute>
@@ -56,7 +62,7 @@ const AppRoutes: React.FC = () => {
         path="/profile"
         element={
           <PrivateRoute>
-            <Layout>
+            <Layout handleToggle={handleToggle} isDarkMode={isDarkMode}>
               <Profile />
             </Layout>
           </PrivateRoute>
@@ -67,7 +73,7 @@ const AppRoutes: React.FC = () => {
         path="/profile/:userId"
         element={
           <PrivateRoute>
-            <Layout>
+            <Layout handleToggle={handleToggle} isDarkMode={isDarkMode}>
               <Profile />
             </Layout>
           </PrivateRoute>
@@ -78,7 +84,7 @@ const AppRoutes: React.FC = () => {
         path="/my-posts"
         element={
           <PrivateRoute>
-            <Layout>
+            <Layout handleToggle={handleToggle} isDarkMode={isDarkMode}>
               <MyPosts />
             </Layout>
           </PrivateRoute>
@@ -89,7 +95,7 @@ const AppRoutes: React.FC = () => {
         path="/post/:postId"
         element={
           <PrivateRoute>
-            <Layout>
+            <Layout handleToggle={handleToggle} isDarkMode={isDarkMode}>
               <PostDetails />
             </Layout>
           </PrivateRoute>
@@ -100,7 +106,7 @@ const AppRoutes: React.FC = () => {
         path="/edit-post/:postId"
         element={
           <PrivateRoute>
-            <Layout>
+            <Layout handleToggle={handleToggle} isDarkMode={isDarkMode}>
               <EditPost />
             </Layout>
           </PrivateRoute>

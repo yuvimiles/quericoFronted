@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/auth-service';
+import { TextField, Button, Card, Container, Alert, CircularProgress, Box, Typography, Input } from '@mui/material';
 
 const Register: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null); // New state for image preview
+  const [imageError, setImageError] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const navigate = useNavigate();
 
   const validateEmail = (email: string): boolean => {
@@ -40,13 +44,27 @@ const Register: React.FC = () => {
       setError('Password must be at least 6 characters');
       return;
     }
-    
+
+    if (profileImage && (profileImage.size > 5 * 1024 * 1024 || !profileImage.type.startsWith('image/'))) {
+      setImageError('Please upload an image file (max 5MB).');
+      return;
+    }
+
     try {
       setLoading(true);
       setError('');
-      
+      setImageError('');
+
       const { request } = authService.register({ name, email, password });
       const response = await request;
+      
+      // Save the uploaded image or add it to the user profile if required
+      if (profileImage) {
+        // Optionally, handle uploading the image
+        const formData = new FormData();
+        formData.append('profileImage', profileImage);
+        // Send this form data to your backend (replace with your logic for uploading the image)
+      }
       
       authService.saveAuth(response.data);
       navigate('/');
@@ -58,114 +76,155 @@ const Register: React.FC = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    authService.loginWithGoogle();
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null;
+    if (file) {
+      setProfileImage(file);
+      setImageError('');
+      
+      // Create an image preview using FileReader
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (reader.result) {
+          setImagePreview(reader.result as string);
+        }
+      };
+      reader.readAsDataURL(file); // Read the file as a data URL
+    }
   };
 
-
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
+    <Container
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        backgroundColor: 'background.default',
+      }}
+    >
+      <Card sx={{ padding: 4, maxWidth: 400, width: '100%' }}>
+        <Typography variant="h5" align="center" mb={3}>Register</Typography>
         
-        {error && (
-          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
-            {error}
-          </div>
-        )}
+        {error && <Alert severity="error" sx={{ marginBottom: 2 }}>{error}</Alert>}
         
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-gray-700 mb-2">name</label>
-            <input
+          <Box mb={2}>
+            <TextField
+              label="Name"
               type="text"
-              id="name"
+              fullWidth
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter name"
               disabled={loading}
+              sx={{ marginBottom: 2 }}
             />
-          </div>
+          </Box>
           
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-700 mb-2">Email</label>
-            <input
+          <Box mb={2}>
+            <TextField
+              label="Email"
               type="email"
-              id="email"
+              fullWidth
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter email"
               disabled={loading}
+              sx={{ marginBottom: 2 }}
             />
-          </div>
+          </Box>
           
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-gray-700 mb-2">Password</label>
-            <input
+          <Box mb={2}>
+            <TextField
+              label="Password"
               type="password"
-              id="password"
+              fullWidth
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter password (at least 6 characters)"
               disabled={loading}
+              sx={{ marginBottom: 2 }}
             />
-          </div>
+          </Box>
           
-          <div className="mb-6">
-            <label htmlFor="confirmPassword" className="block text-gray-700 mb-2">Confirm Password</label>
-            <input
+          <Box mb={3}>
+            <TextField
+              label="Confirm Password"
               type="password"
-              id="confirmPassword"
+              fullWidth
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Confirm your password"
               disabled={loading}
+              sx={{ marginBottom: 2 }}
             />
-          </div>
+          </Box>
+
+          <Box mb={3}>
+            <Input
+              type="file"
+              onChange={handleImageChange}
+              sx={{ display: 'none' }}
+              inputProps={{ accept: 'image/*' }}  // This is how we pass the accept property
+              id="profile-image-upload"
+            />
+            <label htmlFor="profile-image-upload">
+              <Button variant="outlined" component="span" fullWidth>
+                Upload Profile Image
+              </Button>
+            </label>
+            {profileImage && (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                {profileImage.name}
+              </Typography>
+            )}
+            {imageError && <Alert severity="error" sx={{ marginTop: 2 }}>{imageError}</Alert>}
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              Please upload only image files (max 5MB).
+            </Typography>
+            
+            {imagePreview && (
+              <Box sx={{ mt: 2, textAlign: 'center' }}>
+                <img 
+                  src={imagePreview} 
+                  alt="Profile Preview" 
+                  style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'cover' }} 
+                />
+              </Box>
+            )}
+          </Box>
           
-          <button
+          <Button
+            variant="contained"
+            color="primary"
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 mb-4"
+            fullWidth
             disabled={loading}
+            sx={{ marginBottom: 2 }}
           >
-            {loading ? 'Registering...' : 'Register'}
-          </button>
+            {loading ? <CircularProgress size={24} color="inherit" /> : 'Register'}
+          </Button>
         </form>
         
-        <div className="flex items-center justify-center my-4">
-          <hr className="flex-grow border-t border-gray-300" />
-          <span className="mx-4 text-gray-500">or</span>
-          <hr className="flex-grow border-t border-gray-300" />
-        </div>
+        <Box display="flex" alignItems="center" my={2}>
+          <Box sx={{ flexGrow: 1 }}>
+            <hr />
+          </Box>
+          <Typography variant="body2" sx={{ mx: 2, color: 'text.secondary' }}>
+            or
+          </Typography>
+          <Box sx={{ flexGrow: 1 }}>
+            <hr />
+          </Box>
+        </Box>
         
-        <div className="space-y-3">
-          <button
-            onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md hover:bg-gray-50"
-            disabled={loading}
-          >
-            <img src="/google-icon.svg" alt="Google" className="h-5 w-5 mr-2" />
-            Register with Google
-          </button>
-          
-          
-        </div>
-        
-        <div className="mt-6 text-center">
-          <p className="text-gray-600">
+        <Box mt={2} textAlign="center">
+          <Typography variant="body2" color="text.secondary">
             Already have an account?{' '}
-            <Link to="/login" className="text-blue-500 hover:underline">
+            <Link to="/login" style={{ textDecoration: 'none', color: '#1976d2' }}>
               Login here
             </Link>
-          </p>
-        </div>
-      </div>
-    </div>
+          </Typography>
+        </Box>
+      </Card>
+    </Container>
   );
 };
 

@@ -1,19 +1,28 @@
-import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { ThemeProvider } from '@mui/material/styles';
+import { lightTheme, darkTheme } from './theme';
+import { useState } from 'react';
 import AppRoutes from './routes/AppRoutes';
-import AppNavbar from './components/Navbar'; 
-import './App.css';
 
 function App() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const handleToggle = () => {
+    setIsDarkMode((prev) => !prev);
+  };
+
   return (
-    <AuthProvider>
-      <Router>
-        <AppNavbar /> 
-        <AppRoutes />
-      </Router>
-    </AuthProvider>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <AuthProvider>
+        <Router>
+          <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+            <AppRoutes handleToggle={handleToggle} isDarkMode={isDarkMode} />
+          </ThemeProvider>
+        </Router>
+      </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }
 

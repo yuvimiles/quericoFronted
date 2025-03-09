@@ -1,69 +1,74 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Navbar, Nav, Button, Container, Image } from "react-bootstrap";
+import { AppBar, Toolbar, Button, Typography, Box, Avatar, useTheme } from "@mui/material";
 import logo from "../assets/logo.png";
 import { useAuth } from "../contexts/AuthContext";
+import BedtimeIcon from '@mui/icons-material/Bedtime';
+import LightModeIcon from '@mui/icons-material/LightMode';
 
-
-export default function AppNavbar() {
-
+export default function AppNavbar({ handleToggle, isDarkMode }: { handleToggle: () => void, isDarkMode: boolean }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const {user , logout} = useAuth();
+  const { user, logout } = useAuth();
+  const theme = useTheme(); // Get the current theme object
 
   const handleAuth = () => {
     setIsAuthenticated(!isAuthenticated);
   };
+
   const handleLogout = () => {
-    logout(); // This should log out the user in your app context
-    setIsAuthenticated(false); // Update the authentication state
+    logout();
+    setIsAuthenticated(false);
   };
 
-
   return (
-    <Navbar bg="dark" variant="dark" expand="lg" className="shadow-sm custom-navbar">
-      <Container>
-        <div className="d-flex align-items-center">
-          <Navbar.Brand as={Link} to="/" className="d-flex align-items-center brand-left">
-            <img 
-              src={logo} 
-              alt="Logo" 
-              width="40" 
-              height="40" 
-              className="d-inline-block align-top me-2"
-            />
-            <span className="custom-font">QueRico</span>
-          </Navbar.Brand>
-        </div>
-        <Navbar.Toggle aria-controls="navbar-nav" />
-        <Navbar.Collapse id="navbar-nav">
-          <Nav className="ms-auto">
-            <Nav.Link as={Link} to="/feed">  Feed</Nav.Link>
-            <Nav.Link as={Link} to="/profile">  Profile</Nav.Link>
-            {user ? (
-              <div className="d-flex align-items-center">
-                <Image 
-                  src={user.profilePicture || "/default-avatar.png"} // Fallback to default if no avatar
-                  alt="User Avatar"
-                  width="40"
-                  height="40"
-                  roundedCircle
-                  className="me-2"
-                />
-                <Button variant="outline-light" onClick={handleLogout}>Logout</Button>
-              </div>
-            ) : (
-              <Nav.Link as={Link} to="/login" className="btn btn-outline-light">Login</Nav.Link>
-            )}
-        
-            {/* {isAuthenticated ? (
+    <AppBar position="sticky" sx={{ bgcolor: 'primary.main', boxShadow: 3 }}>
+      <Toolbar>
+        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+            <img src={logo} alt="Logo" width="40" height="40" />
+            <Typography variant="h6" sx={{ ml: 2, color: 'secondary.main', fontFamily: 'Roboto, sans-serif' }}>
+              QueRico
+            </Typography>
+          </Link>
+        </Box>
 
-              <Button variant="outline-light" onClick={handleAuth}>Logout</Button>
-            ) : (
-              <Nav.Link as={Link} to="/login" className="btn btn-outline-light">Login</Nav.Link>
-            )} */}
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Button component={Link} to="/feed" sx={{ color: 'secondary.main', mr: 3 }}>
+            Feed
+          </Button>
+          <Button component={Link} to="/profile" sx={{ color: 'secondary.main', mr: 3 }}>
+            Profile
+          </Button>
+
+          {user ? (
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Avatar
+                src={user.profilePicture || import.meta.env.VITE_DEFAULT_USER_PHOTO}
+                alt="User Avatar"
+                sx={{ width: 40, height: 40, mr: 2 }}
+              />
+              <Button variant="outlined" color="inherit" onClick={handleLogout}>
+                Logout
+              </Button>
+            </Box>
+          ) : (
+            <Button component={Link} to="/login" variant="outlined" color="inherit">
+              Login
+            </Button>
+          )}
+          {/* Dark mode toggle button */}
+          <Button
+              onClick={handleToggle}
+              sx={{
+                ml: 3,
+                color: theme.palette.mode === 'dark' ? theme.palette.secondary.main : theme.palette.primary.contrastText,
+              }}
+              aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {isDarkMode ? <BedtimeIcon /> : <LightModeIcon />}
+            </Button>
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 }

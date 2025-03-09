@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types/user-type';
 import authService from '../services/auth-service';
-
 // Define the shape of the context
 interface AuthContextType {
   user: User | null;
@@ -11,13 +10,11 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<void>;
   register: (username: string, email: string, password: string) => Promise<void>;
   logout: () => void;
-  loginWithGoogle: () => void;
+  loginWithGoogle: (credential: string) => Promise<void>;
   clearError: () => void;
 }
-
 // Create context with undefined default value
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
 // Custom hook to use auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -26,12 +23,10 @@ export const useAuth = () => {
   }
   return context;
 };
-
 // Provider component props interface
 interface AuthProviderProps {
   children: ReactNode;
 }
-
 // Auth provider component
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -42,7 +37,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
       const currentUser = authService.getCurrentUser();
-      console.log(currentUser);
       
       if (currentUser && authService.isAuthenticated()) {
         setUser(currentUser);
@@ -117,10 +111,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Social login functions
-  const loginWithGoogle = () => {
-    authService.loginWithGoogle();
-  };
+  // Google Login function
+const loginWithGoogle = async (credential: string) => {
+  setIsLoading(true);
+  setError(null);
+
+  try {
+    const { request } = authService.loginWithGoogleToken(credential);
+    const response = await request;
+
+    authService.saveAuth(response.data);
+    setUser(response.data.user);
+  } catch (err: any) {
+    setError(err.response?.data?.message || 'Google login failed');
+    throw err;
+  } finally {
+    setIsLoading(false);
+  }
+};
 
 
   // Clear error function

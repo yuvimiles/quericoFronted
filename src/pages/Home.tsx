@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Box, Button, CircularProgress, Alert, Typography } from '@mui/material';
 import postService, { PostWithAuthor } from '../services/post-service';
 import PostCard from '../components/postCard';
 import CreatePost from '../components/createPost';
@@ -10,21 +11,20 @@ const Home: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
 
-
   const fetchPosts = async (pageNumber: number = 1) => {
     try {
       setLoading(true);
       const { request } = postService.getAllPosts(pageNumber);
       const response = await request;
-      
+
       const { posts: newPosts, total } = response.data;
-      
+
       if (pageNumber === 1) {
         setPosts(newPosts);
       } else {
         setPosts(prev => [...prev, ...newPosts]);
       }
-      
+
       // Check if there are more posts to load
       setHasMore(posts.length + newPosts.length < total);
       setPage(pageNumber);
@@ -35,19 +35,19 @@ const Home: React.FC = () => {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchPosts();
   }, []);
-  
+
   const handlePostCreated = (newPost: PostWithAuthor) => {
     setPosts(prev => [newPost, ...prev]);
   };
-  
+
   const handlePostDeleted = (postId: string) => {
     setPosts(prev => prev.filter(post => post._id !== postId));
   };
-  
+
   const handleLoadMore = () => {
     if (!loading && hasMore) {
       fetchPosts(page + 1);
@@ -55,53 +55,65 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Main content - posts column */}
-        <div className="md:col-span-2">
-          <CreatePost onPostCreated={handlePostCreated} />
-          
-          {error && (
-            <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
-              {error}
-            </div>
-          )}
-          
-          {posts.length === 0 && !loading ? (
-            <div className="bg-white p-6 rounded-lg shadow-md text-center">
-              <p className="text-gray-500">No posts yet. Be the first to share something!</p>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {posts.map(post => (
-                <PostCard 
-                  key={post._id} 
-                  post={post} 
-                  onDeletePost={handlePostDeleted} 
-                />
-              ))}
-            </div>
-          )}
-          
-          {loading && (
-            <div className="flex justify-center my-6">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-            </div>
-          )}
-          
-          {hasMore && !loading && (
-            <div className="flex justify-center mt-6">
-              <button 
-                onClick={handleLoadMore}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
-              >
-                Load More
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh', // Make sure it's at least the height of the screen
+        px: 4,
+        py: 6,
+      }}
+    >
+      <CreatePost onPostCreated={handlePostCreated} />
+      <Box sx={{ width: '100%', maxWidth: '1200px' }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 6 }}>
+          {/* Main content - posts column */}
+          <Box sx={{ flex: 1 }}>
+
+            {error && (
+              <Alert severity="error" sx={{ mb: 6 }}>
+                {error}
+              </Alert>
+            )}
+
+            {posts.length === 0 && !loading ? (
+              <Box sx={{ bgcolor: 'white', p: 6, borderRadius: 2, boxShadow: 2, textAlign: 'center' }}>
+                <Typography variant="body1" color="textSecondary">
+                  No posts yet. Be the first to share something!
+                </Typography>
+              </Box>
+            ) : (
+              <Box sx={{ mt: 3 }}>
+                {posts.map(post => (
+                  <PostCard key={post._id} post={post} onDeletePost={handlePostDeleted} />
+                ))}
+              </Box>
+            )}
+
+            {loading && (
+              <Box sx={{ display: 'flex', justifyContent: 'center', my: 6 }}>
+                <CircularProgress />
+              </Box>
+            )}
+
+            {hasMore && !loading && (
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleLoadMore}
+                  sx={{ px: 4, py: 2 }}
+                >
+                  Load More
+                </Button>
+              </Box>
+            )}
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 
