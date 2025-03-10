@@ -1,7 +1,7 @@
 // הגדרת ממשק למשתמש לפי המבנה הקיים
 export interface User {
-    _id: string; // mongoose.Types.ObjectId
-    username: string;
+    id: string; // mongoose.Types.ObjectId
+    name: string;
     email: string;
     password: string;
     profileImage: string;
@@ -20,7 +20,7 @@ export interface User {
   
   // ממשק לעדכון פרטי משתמש
   export interface UserUpdateRequest {
-    username?: string;
+    name?: string;
     email?: string;
     profileImage?: File;
   }

@@ -5,12 +5,12 @@ export { CanceledError };
 
 // הגדרת ממשקים 
 export interface LoginRequest {
-  username: string;
+  email: string;
   password: string;
 }
 
 export interface RegisterRequest {
-  username: string;
+  name: string;
   email: string;
   password: string;
 }
@@ -20,7 +20,6 @@ export interface AuthResponse {
   accessToken: string;
   refreshToken?: string;
 }
-
 // התחברות
 const login = (credentials: LoginRequest) => {
   const controller = new AbortController();
@@ -30,7 +29,15 @@ const login = (credentials: LoginRequest) => {
   
   return { request, cancel: () => controller.abort() };
 };
+// התחברות באמצעות Google
+const loginWithGoogleToken = (credential: string) => {
+  const controller = new AbortController();
+  const request = apiClient.post<AuthResponse>('/auth/googleAuth', { credential }, {
+    signal: controller.signal,
+  });
 
+  return { request, cancel: () => controller.abort() };
+};
 // הרשמה
 const register = (userData: RegisterRequest) => {
   const controller = new AbortController();
@@ -44,10 +51,16 @@ const register = (userData: RegisterRequest) => {
 // רענון טוקן
 const refreshToken = () => {
   const controller = new AbortController();
-  const request = apiClient.post<AuthResponse>('/auth/refresh-token', {}, {
+  const refreshToken = localStorage.getItem('refreshToken'); // Get the refresh token from localStorage
+
+  if (!refreshToken) {
+    throw new Error('No refresh token available');
+  }
+
+  const request = apiClient.post<AuthResponse>('/auth/refresh-token', { refreshToken }, {
     signal: controller.signal
   });
-  
+
   return { request, cancel: () => controller.abort() };
 };
 
@@ -63,9 +76,9 @@ const logout = () => {
 
 // שמירת הטוקן ופרטי המשתמש
 const saveAuth = (auth: AuthResponse) => {
-  localStorage.setItem('auth_token', auth.accessToken);
+  localStorage.setItem('accessToken', auth.accessToken);
   if (auth.refreshToken) {
-    localStorage.setItem('refresh_token', auth.refreshToken);
+    localStorage.setItem('refreshToken', auth.refreshToken);
   }
   localStorage.setItem('user', JSON.stringify(auth.user));
 };
@@ -78,7 +91,7 @@ const getCurrentUser = (): User | null => {
 
 // קבלת הטוקן
 const getToken = (): string | null => {
-  return localStorage.getItem('auth_token');
+  return localStorage.getItem('accessToken');
 };
 
 // בדיקה אם המשתמש מחובר
@@ -88,19 +101,10 @@ const isAuthenticated = (): boolean => {
 
 // ניקוי מידע מהלוקל סטורג' בעת התנתקות
 const clearAuth = () => {
-  localStorage.removeItem('auth_token');
-  localStorage.removeItem('refresh_token');
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
   localStorage.removeItem('user');
 };
-
-// התחברות באמצעות Google
-const loginWithGoogle = () => {
-  // שימוש בכתובת בסיסית במקום apiClient.defaults.baseURL אם הוא לא זמין
-  const baseURL = "http://localhost:5000/"; // או כל כתובת אחרת רלוונטית
-  window.location.href = `${baseURL}/auth/google`;
-};
-
-
 
 const authService = {
   login,
@@ -112,7 +116,7 @@ const authService = {
   getToken,
   isAuthenticated,
   clearAuth,
-  loginWithGoogle
+  loginWithGoogleToken
 };
 
 export default authService;

@@ -4,7 +4,7 @@ import axios, { CanceledError } from "axios";
 export { CanceledError };
 
 // הגדרת המשתנה הסביבתי או ברירת מחדל אם חסר
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/";
+const API_URL = import.meta.env.VITE_SERVER_API_URL || "http://localhost:5000/";
 
 // יצירת מופע axios עם הגדרות בסיסיות
 const apiClient = axios.create({
@@ -18,7 +18,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     // בדיקה אם יש טוקן בלוקל סטורג'
-    const token = localStorage.getItem("auth_token");
+    const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
