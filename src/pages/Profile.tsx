@@ -9,43 +9,26 @@ import PostCard from '../components/postCard';
 import ProfileEditModal from './ProfileEdit';
 
 const Profile: React.FC = () => {
-  // const { userId } = useParams<{ userId?: string }>();
-  const navigate = useNavigate();
-  
-  const currentUser = authService.getCurrentUser() || JSON.parse(localStorage.getItem('user') || '{}'); // Get the current user from localStorage or authService
-  console.log(currentUser)
-  const targetUserId = currentUser?._id;
-
-  useEffect(() => {
-    if (!targetUserId) {
-      navigate('/login');
-      return;
-    }
-    fetchProfileData();
-    fetchPosts(1);
-  }, [targetUserId, navigate]);
-
   const [user, setUser] = useState<User | null>(null);
   const [posts, setPosts] = useState<PostWithAuthor[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const navigate = useNavigate();
+  const currentUser = authService.getCurrentUser(); // Get the current user from localStorage or authService
+  const targetUserId = currentUser?.id;
 
-  const fetchProfileData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const { request } = userService.getUserProfile(targetUserId!);
-      const userResponse = await request;
-      setUser(userResponse.data);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to load profile');
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    setUser(currentUser)
+    console.log(currentUser);
+    if (!targetUserId) {
+      navigate('/login');
+      return;
     }
-  };
+    // fetchPosts(1);
+  }, [targetUserId, navigate]);
 
   const fetchPosts = async (pageNumber: number = 1) => {
     try {
@@ -77,15 +60,15 @@ const Profile: React.FC = () => {
         <Card sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
           <Box sx={{ position: 'relative', mr: 4 }}>
             <Avatar
-              alt={user.username}
-              src={user.profilePicture || '/default-avatar.jpg'}
+              alt={user.name}
+              src={user.profileImage || '/default-avatar.jpg'}
               sx={{ width: 120, height: 120, border: 4, borderColor: 'white', objectFit: 'cover' }}
             />
           </Box>
           <Box>
-            <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{user.username}</Typography>
+            <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{user.name}</Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>{user.email}</Typography>
-            {currentUser?._id === user._id && (
+            {user.id && (
               <Button
                 onClick={() => setShowEditModal(true)}
                 variant="contained"
@@ -100,7 +83,7 @@ const Profile: React.FC = () => {
       )}
 
       {/* User Posts */}
-      <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>Posts</Typography>
+      <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 , color: 'text.secondary' }}>Posts</Typography>
       {posts.length === 0 && !loading ? (
         <Typography variant="body2" color="text.secondary" align="center">No posts yet.</Typography>
       ) : (

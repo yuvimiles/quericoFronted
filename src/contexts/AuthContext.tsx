@@ -42,17 +42,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(currentUser);
         
         // Try to refresh token
-        try {
-          const { request } = authService.refreshToken();
-          const response = await request;
+        // try {
+        //   const { request } = authService.refreshToken();
+        //   const response = await request;
           
-          // Update auth data
-          authService.saveAuth(response.data);
-          setUser(response.data.user);
-        } catch (err) {
-          console.error('Token refresh failed:', err);
-          // If refresh fails, we still keep the user logged in with current token
-        }
+        //   // Update auth data
+        //   authService.saveAuth(response.data);
+        //   setUser(response.data.user);
+        // } catch (err) {
+        //   console.error('Token refresh failed:', err);
+        //   // If refresh fails, we still keep the user logged in with current token
+        // }
       }
       
       setIsLoading(false);
@@ -129,7 +129,6 @@ const loginWithGoogle = async (credential: string) => {
     setIsLoading(false);
   }
 };
-
 
   // Clear error function
   const clearError = () => {

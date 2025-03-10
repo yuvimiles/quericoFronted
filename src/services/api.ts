@@ -18,7 +18,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     // בדיקה אם יש טוקן בלוקל סטורג'
-    const token = localStorage.getItem("auth_token");
+    const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

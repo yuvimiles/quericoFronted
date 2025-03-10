@@ -106,8 +106,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
       <Box sx={{ display: 'flex', alignItems: 'start', mb: 4 }}>
         <Box
           component="img"
-          src={currentUser?.profilePicture || import.meta.env.VITE_DEFAULT_USER_PHOTO}
-          alt={currentUser?.username || 'User'}
+          src={currentUser?.profileImage || import.meta.env.VITE_DEFAULT_USER_PHOTO}
+          alt={currentUser?.name || 'User'}
           sx={{
             width: 40,
             height: 40,

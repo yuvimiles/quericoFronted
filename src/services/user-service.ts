@@ -3,16 +3,6 @@ import { User, UserUpdateRequest, PasswordChangeRequest } from "../types/user-ty
 
 export { CanceledError };
 
-// קבלת פרופיל משתמש
-const getUserProfile = (userId: string) => {
-  const controller = new AbortController();
-  const request = apiClient.get<User>(`/users/${userId}`, {
-    signal: controller.signal
-  });
-  
-  return { request, cancel: () => controller.abort() };
-};
-
 // עדכון פרופיל משתמש
 const updateUserProfile = (userId: string, userData: UserUpdateRequest) => {
   const controller = new AbortController();
@@ -21,12 +11,13 @@ const updateUserProfile = (userId: string, userData: UserUpdateRequest) => {
   if (userData.profileImage) {
     const formData = new FormData();
     
-    if (userData.username) formData.append('username', userData.username);
+    if (userData.name) formData.append('name', userData.name);
     if (userData.email) formData.append('email', userData.email);
+    if (userId) formData.append('userId', userId);
     
     formData.append('profileImage', userData.profileImage);
     
-    const request = apiClient.put<User>(`/users/${userId}`, formData, {
+    const request = apiClient.post<User>(`/users/update`, formData, {
       signal: controller.signal,
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -65,7 +56,7 @@ const searchUsers = (query: string) => {
 };
 
 const userService = {
-  getUserProfile,
+  // getUserProfile,
   updateUserProfile,
   changePassword,
   searchUsers

@@ -70,17 +70,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ handleToggle, isDarkMode }) => {
       />
       
       <Route
-        path="/profile/:userId"
-        element={
-          <PrivateRoute>
-            <Layout handleToggle={handleToggle} isDarkMode={isDarkMode}>
-              <Profile />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-      
-      <Route
         path="/my-posts"
         element={
           <PrivateRoute>
