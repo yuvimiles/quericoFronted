@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Box, CircularProgress, Button, Typography, Card, Avatar, Alert } from '@mui/material';
-import userService from '../services/user-service';
 import postService, { PostWithAuthor } from '../services/post-service';
 import authService from '../services/auth-service';
 import { User } from '../types/user-type';
@@ -17,13 +16,15 @@ const Profile: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const navigate = useNavigate();
+
+
   const currentUser = authService.getCurrentUser(); // Get the current user from localStorage or authService
   const targetUserId = currentUser?.id;
 
   useEffect(() => {
     setUser(currentUser)
     console.log(currentUser);
-    if (!targetUserId) {
+    if (!currentUser) {
       navigate('/login');
       return;
     }
@@ -68,7 +69,7 @@ const Profile: React.FC = () => {
           <Box>
             <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{user.name}</Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>{user.email}</Typography>
-            {user.id && (
+           
               <Button
                 onClick={() => setShowEditModal(true)}
                 variant="contained"
@@ -77,7 +78,7 @@ const Profile: React.FC = () => {
               >
                 Edit Profile
               </Button>
-            )}
+            
           </Box>
         </Card>
       )}
@@ -113,6 +114,7 @@ const Profile: React.FC = () => {
           onSave={(updatedUser) => {
             setUser(updatedUser);
             setShowEditModal(false);
+            // navigate('/profile', { replace: true });
           }}
           onClose={() => setShowEditModal(false)}
         />
