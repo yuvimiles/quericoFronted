@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, CircularProgress, Alert, Typography } from '@mui/material';
-import postService, { PostWithAuthor } from '../services/post-service';
+import postService, { Post } from '../services/post-service';
 import PostCard from '../components/postCard';
 import CreatePost from '../components/createPost';
 
 const Home: React.FC = () => {
-  const [posts, setPosts] = useState<PostWithAuthor[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(1);
@@ -40,14 +40,19 @@ const Home: React.FC = () => {
     fetchPosts();
   }, []);
 
-  const handlePostCreated = (newPost: PostWithAuthor) => {
+  const handlePostCreated = (newPost: Post) => {
     setPosts(prev => [newPost, ...prev]);
   };
 
   const handlePostDeleted = (postId: string) => {
     setPosts(prev => prev.filter(post => post._id !== postId));
   };
-
+  const handlePostUpdated = (updatedPost: Post) => {
+    setPosts((prev) =>
+      prev.map((post) => (post._id === updatedPost._id ? updatedPost : post))
+    );
+  };
+  
   const handleLoadMore = () => {
     if (!loading && hasMore) {
       fetchPosts(page + 1);
@@ -87,7 +92,7 @@ const Home: React.FC = () => {
             ) : (
               <Box sx={{ mt: 3 }}>
                 {posts.map(post => (
-                  <PostCard key={post._id} post={post} onDeletePost={handlePostDeleted} />
+                  <PostCard key={post._id} post={post} onDeletePost={handlePostDeleted} onUpdatePost={handlePostUpdated} />
                 ))}
               </Box>
             )}

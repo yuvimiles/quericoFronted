@@ -9,7 +9,7 @@ import Home from '../pages/Home';
 import Profile from '../pages/Profile';
 import MyPosts from '../pages/MyPosts';
 import PostDetails from '../pages/PostDetails';
-import EditPost from '../pages/EditPost';
+// import EditPost from '../pages/EditPost';
 
 // Layout
 import Layout from '../components/Layout';
@@ -91,7 +91,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ handleToggle, isDarkMode }) => {
         }
       />
       
-      <Route
+      {/* <Route
         path="/edit-post/:postId"
         element={
           <PrivateRoute>
@@ -100,7 +100,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ handleToggle, isDarkMode }) => {
             </Layout>
           </PrivateRoute>
         }
-      />
+      /> */}
       
       {/* Default redirect to home */}
       <Route path="*" element={<Navigate to="/" />} />
