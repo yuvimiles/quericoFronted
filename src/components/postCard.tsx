@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { formatDistance } from "date-fns";
@@ -28,7 +29,7 @@ interface PostCardProps {
   onUpdatePost?: (updatedPost: Post) => void; // Handle updated post
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post, onDeletePost, onUpdatePost }) => {
+const PostCard: React.FC<PostCardProps> = ({ post, onDeletePost }) => {
   const [isLiked, setIsLiked] = useState<boolean>(() => {
     const currentUser = authService.getCurrentUser();
     return currentUser ? post.likes.includes(currentUser.id) : false;
@@ -56,9 +57,10 @@ const PostCard: React.FC<PostCardProps> = ({ post, onDeletePost, onUpdatePost })
         await request;
         setLikesCount((prev) => prev + 1);
       }
+
       setIsLiked(!isLiked);
     } catch (error) {
-      console.error("Error toggling like", error);
+      console.error('Error toggling like', error);
     }
   };
 
@@ -69,10 +71,12 @@ const PostCard: React.FC<PostCardProps> = ({ post, onDeletePost, onUpdatePost })
         const { request } = postService.deletePost(post._id);
         await request;
 
+
         if (onDeletePost) onDeletePost(post._id);
       } catch (error) {
         console.error("Error deleting post", error);
         alert("An error occurred while deleting the post");
+
       } finally {
         setIsDeleting(false);
       }
