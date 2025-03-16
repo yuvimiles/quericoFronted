@@ -43,7 +43,7 @@ export default function AppNavbar({ handleToggle, isDarkMode }: { handleToggle: 
           {user ? (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Avatar
-                src={user.profilePicture || import.meta.env.VITE_DEFAULT_USER_PHOTO}
+                src={user.profileImage || import.meta.env.VITE_DEFAULT_USER_PHOTO}
                 alt="User Avatar"
                 sx={{ width: 40, height: 40, mr: 2 }}
               />

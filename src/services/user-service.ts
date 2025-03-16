@@ -28,7 +28,7 @@ const updateUserProfile = (userId: string, userData: UserUpdateRequest) => {
   }
   
   // אם אין תמונה, שליחת JSON רגיל
-  const request = apiClient.put<User>(`/users/${userId}`, userData, {
+  const request = apiClient.post<User>(`/users/update`, userData, {
     signal: controller.signal
   });
   
@@ -44,7 +44,10 @@ const changePassword = (data: PasswordChangeRequest) => {
   
   return { request, cancel: () => controller.abort() };
 };
-
+const updateLoggedUser = (user: User)=> {
+  console.log(user)
+  localStorage.setItem('user', JSON.stringify(user));
+}
 // חיפוש משתמשים (לפי שם משתמש)
 const searchUsers = (query: string) => {
   const controller = new AbortController();
@@ -59,7 +62,8 @@ const userService = {
   // getUserProfile,
   updateUserProfile,
   changePassword,
-  searchUsers
+  searchUsers,
+  updateLoggedUser
 };
 
 export default userService;

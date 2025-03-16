@@ -6,21 +6,17 @@ export { CanceledError };
 // הגדרת ממשקים לפי המבנה הקיים
 export interface Post {
   _id: string;
-  author: string; // IUser['_id']
+  author:{
+    _id?: string;
+    name?: string;
+    profileImage?: string;
+  }; // IUser['_id']
   text: string;
   image?: string;
   likes: string[]; // מערך של IUser['_id']
   comments: IComment[];
   createdAt: Date;
   updatedAt: Date;
-}
-
-export interface PostWithAuthor extends Omit<Post, 'author'> {
-  author: {
-    _id: string;
-    username: string;
-    profileImage: string;
-  };
 }
 
 export interface PostCreateData {
@@ -30,13 +26,13 @@ export interface PostCreateData {
 
 export interface PostUpdateData {
   text: string;
-  image?: File;
+  image?: File | null;
 }
 
 // קבלת כל הפוסטים עם paging
 const getAllPosts = (page: number = 1, limit: number = 10) => {
   const controller = new AbortController();
-  const request = apiClient.get<{ posts: PostWithAuthor[], total: number }>(`/posts?page=${page}&limit=${limit}`, {
+  const request = apiClient.get<{ posts: Post[], total: number }>(`/posts?page=${page}&limit=${limit}`, {
     signal: controller.signal
   });
   
@@ -46,7 +42,7 @@ const getAllPosts = (page: number = 1, limit: number = 10) => {
 // קבלת פוסטים של משתמש ספציפי
 const getUserPosts = (userId: string, page: number = 1, limit: number = 10) => {
   const controller = new AbortController();
-  const request = apiClient.get<{ posts: PostWithAuthor[], total: number }>(`/posts/user/${userId}?page=${page}&limit=${limit}`, {
+  const request = apiClient.get<{ posts: Post[], total: number }>(`/posts/user/${userId}?page=${page}&limit=${limit}`, {
     signal: controller.signal
   });
   
@@ -56,7 +52,7 @@ const getUserPosts = (userId: string, page: number = 1, limit: number = 10) => {
 // קבלת פוסט לפי ID
 const getPostById = (postId: string) => {
   const controller = new AbortController();
-  const request = apiClient.get<PostWithAuthor>(`/posts/${postId}`, {
+  const request = apiClient.get<Post>(`/posts/${postId}`, {
     signal: controller.signal
   });
   
@@ -136,27 +132,14 @@ const getPostComments = (postId: string) => {
   
   return { request, cancel: () => controller.abort() };
 };
-
-// לייק לפוסט
-const likePost = (postId: string) => {
+const toggleLike = (postId: string) => {
   const controller = new AbortController();
   const request = apiClient.post(`/posts/${postId}/like`, {}, {
-    signal: controller.signal
+    signal: controller.signal,
   });
-  
+
   return { request, cancel: () => controller.abort() };
 };
-
-// ביטול לייק לפוסט
-const unlikePost = (postId: string) => {
-  const controller = new AbortController();
-  const request = apiClient.delete(`/posts/${postId}/like`, {
-    signal: controller.signal
-  });
-  
-  return { request, cancel: () => controller.abort() };
-};
-
 const postService = {
   getAllPosts,
   getUserPosts,
@@ -166,8 +149,7 @@ const postService = {
   deletePost,
   addComment,
   getPostComments,
-  likePost,
-  unlikePost
+  toggleLike
 };
 
 export default postService;
