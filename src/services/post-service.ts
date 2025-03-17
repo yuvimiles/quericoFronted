@@ -30,9 +30,9 @@ export interface PostUpdateData {
 }
 
 // קבלת כל הפוסטים עם paging
-const getAllPosts = (page: number = 1, limit: number = 10) => {
+const getAllPosts = (page: number = 1, limit: number = 5) => {
   const controller = new AbortController();
-  const request = apiClient.get<{ posts: Post[], total: number }>(`/posts?page=${page}&limit=${limit}`, {
+  const request = apiClient.get<{ posts: Post[], totalPosts: number }>(`/posts?page=${page}&limit=${limit}`, {
     signal: controller.signal
   });
   

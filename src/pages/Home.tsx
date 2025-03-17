@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, CircularProgress, Alert, Typography } from '@mui/material';
+import { Box, CircularProgress, Alert, Typography } from '@mui/material';
 import postService, { Post } from '../services/post-service';
 import PostCard from '../components/postCard';
 import CreatePost from '../components/createPost';
@@ -16,17 +16,15 @@ const Home: React.FC = () => {
       setLoading(true);
       const { request } = postService.getAllPosts(pageNumber);
       const response = await request;
+      const newPosts = response.data.posts;
+      const total = response.data.totalPosts;
 
-      const { posts: newPosts, total } = response.data;
-
-      if (pageNumber === 1) {
-        setPosts(newPosts);
-      } else {
-        setPosts(prev => [...prev, ...newPosts]);
-      }
-
-      // Check if there are more posts to load
-      setHasMore(posts.length + newPosts.length < total);
+      // Update posts state and calculate hasMore
+    setPosts(prev => {
+      const updatedPosts = pageNumber === 1 ? newPosts : [...prev, ...newPosts];
+      setHasMore(updatedPosts.length < total);
+      return updatedPosts;
+    });
       setPage(pageNumber);
     } catch (err: any) {
       console.error('Error fetching posts:', err);
@@ -40,6 +38,27 @@ const Home: React.FC = () => {
     fetchPosts();
   }, []);
 
+  useEffect(() => {
+    // Handle infinite scroll event
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.documentElement.offsetHeight - 200
+      ) {
+        if ((!loading )&& hasMore) {
+          fetchPosts(page + 1);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    // Cleanup listener on unmount
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [loading, hasMore, page]);
+
   const handlePostCreated = (newPost: Post) => {
     setPosts(prev => [newPost, ...prev]);
   };
@@ -47,15 +66,11 @@ const Home: React.FC = () => {
   const handlePostDeleted = (postId: string) => {
     setPosts(prev => prev.filter(post => post._id !== postId));
   };
+
   const handlePostUpdated = (updatedPost: Post) => {
     setPosts((prev) =>
       prev.map((post) => (post._id === updatedPost._id ? updatedPost : post))
     );
-  };
-  const handleLoadMore = () => {
-    if (!loading && hasMore) {
-      fetchPosts(page + 1);
-    }
   };
 
   return (
@@ -65,7 +80,7 @@ const Home: React.FC = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        minHeight: '100vh', // Make sure it's at least the height of the screen
+        minHeight: '100vh',
         px: 4,
         py: 6,
       }}
@@ -75,7 +90,6 @@ const Home: React.FC = () => {
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 6 }}>
           {/* Main content - posts column */}
           <Box sx={{ flex: 1 }}>
-
             {error && (
               <Alert severity="error" sx={{ mb: 6 }}>
                 {error}
@@ -99,19 +113,6 @@ const Home: React.FC = () => {
             {loading && (
               <Box sx={{ display: 'flex', justifyContent: 'center', my: 6 }}>
                 <CircularProgress />
-              </Box>
-            )}
-
-            {hasMore && !loading && (
-              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleLoadMore}
-                  sx={{ px: 4, py: 2 }}
-                >
-                  Load More
-                </Button>
               </Box>
             )}
           </Box>

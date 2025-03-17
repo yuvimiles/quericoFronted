@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, CircularProgress, Button, Typography, Card, Avatar, Alert } from '@mui/material';
-import postService, { PostWithAuthor } from '../services/post-service';
+import postService , {Post} from '../services/post-service';
 import authService from '../services/auth-service';
 import { User } from '../types/user-type';
 import PostCard from '../components/postCard';
@@ -9,7 +9,7 @@ import ProfileEditModal from './ProfileEdit';
 
 const Profile: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [posts, setPosts] = useState<PostWithAuthor[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
@@ -19,16 +19,15 @@ const Profile: React.FC = () => {
 
 
   const currentUser = authService.getCurrentUser(); // Get the current user from localStorage or authService
-  const targetUserId = currentUser?.id;
+  const targetUserId = currentUser?._id || currentUser?.id;
 
   useEffect(() => {
     setUser(currentUser)
-    console.log(currentUser);
     if (!currentUser) {
       navigate('/login');
       return;
     }
-    // fetchPosts(1);
+    fetchPosts(1);
   }, [targetUserId, navigate]);
 
   const fetchPosts = async (pageNumber: number = 1) => {
@@ -88,7 +87,11 @@ const Profile: React.FC = () => {
       {posts.length === 0 && !loading ? (
         <Typography variant="body2" color="text.secondary" align="center">No posts yet.</Typography>
       ) : (
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 2 }}>
+        <Box sx={{  display: 'flex', 
+          flexWrap: 'wrap', 
+          gap: 2, 
+          justifyContent: 'center' 
+          }}>
           {posts.map(post => (
             <PostCard key={post._id} post={post} />
           ))}
@@ -112,9 +115,9 @@ const Profile: React.FC = () => {
         <ProfileEditModal
           user={user}
           onSave={(updatedUser) => {
+            localStorage.setItem('user', JSON.stringify(updatedUser));
             setUser(updatedUser);
             setShowEditModal(false);
-            // navigate('/profile', { replace: true });
           }}
           onClose={() => setShowEditModal(false)}
         />
