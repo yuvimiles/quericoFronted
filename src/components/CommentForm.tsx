@@ -1,78 +1,103 @@
-import React, { useState } from 'react';
-import postService from '../services/post-service';
-import { ICommentWithAuthor } from '../types/user-type';
+import React, { useState, useEffect } from "react";
+import {
+  Button,
+  TextField,
+  CircularProgress,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import commentService from "../services/comment-service";
+import { IComment } from "../types/user-type";
 
-interface CommentFormProps {
+interface CommentDialogProps {
   postId: string;
-  onCommentAdded: (comment: ICommentWithAuthor) => void;
+  open: boolean;
+  onClose: () => void;
+  onCommentAdded: (comment: IComment) => void;
 }
 
-const CommentForm: React.FC<CommentFormProps> = ({ postId, onCommentAdded }) => {
-  const [text, setText] = useState<string>('');
+const CommentDialog: React.FC<CommentDialogProps> = ({
+  postId,
+  open,
+  onClose,
+  onCommentAdded,
+}) => {
+  const [text, setText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  
+
+  useEffect(() => {});
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!text.trim()) {
-      setError('Please enter a comment');
+      setError("Please enter a comment");
       return;
     }
-    
     try {
       setIsLoading(true);
       setError(null);
+        // Add new comment
+        const { request } = commentService.addComment(postId, text.trim());
+        const response = await request;
+        onCommentAdded(response.data);
       
-      const { request } = postService.addComment(postId, text.trim());
-      const response = await request;
-      
-      // Transform the response if needed to match ICommentWithAuthor
-      const commentData = response.data;
-      
-      setText('');
-      // Pass the data to the parent component
-      onCommentAdded(commentData);
+      setText("");
+      onClose(); // Close dialog after success
     } catch (err: any) {
-      console.error('Error adding comment:', err);
-      setError(err.response?.data?.message || 'Failed to add comment');
+      console.error("Error submitting comment:", err);
+      setError(err.response?.data?.message || "Failed to submit comment");
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   return (
-    <div className="mb-4">
-      {error && (
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 mb-3 rounded">
-          {error}
-        </div>
-      )}
-      
-      <form onSubmit={handleSubmit}>
-        <div className="mb-2">
-          <textarea
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          Add a Comment
+        <IconButton onClick={onClose} sx={{ ml: 1 }}>
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+
+      <DialogContent>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <TextField
+            fullWidth
+            multiline
+            rows={2}
+            variant="outlined"
+            placeholder="Write a comment..."
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Write a comment..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            rows={2}
             disabled={isLoading}
+            sx={{ mb: 2 }}
           />
-        </div>
-        
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Posting...' : 'Post Comment'}
-          </button>
-        </div>
-      </form>
-    </div>
+        </form>
+      </DialogContent>
+
+      <DialogActions>
+        <Button onClick={onClose} color="secondary" disabled={isLoading}>
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} variant="contained" color="primary" disabled={isLoading}>
+          {isLoading ? <CircularProgress size={24} /> :"Post Comment"}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
-export default CommentForm;
+export default CommentDialog;

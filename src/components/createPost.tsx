@@ -59,9 +59,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
         text: text.trim(),
         image: image || undefined,
       });
-      console.log('before request');
       const response = await request;
-      console.log('after request');
       setText('');
       setImage(null);
       setImagePreview(null);

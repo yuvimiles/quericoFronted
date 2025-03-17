@@ -34,7 +34,11 @@ export interface User {
   // ממשק לתגובה בשירות
   export interface IComment {
     _id: string;
-    author: string; // IUser['_id']
+    author:{
+      _id?: string;
+      name?: string;
+      profileImage?: string;
+    }; // IUser['_id']
     post: string; // IPost['_id']
     text: string;
     createdAt: Date;
@@ -42,11 +46,3 @@ export interface User {
   }
   
   // ממשק מורחב לתגובה עם פרטי המשתמש המגיב
-  export interface ICommentWithAuthor {
-    _id: string;
-    author: UserBasic;
-    post: string;
-    text: string;
-    createdAt: Date;
-    updatedAt: Date;
-  }

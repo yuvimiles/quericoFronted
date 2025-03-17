@@ -1,5 +1,5 @@
 import apiClient, { CanceledError } from "./api";
-import { IComment, ICommentWithAuthor } from "../types/user-type";
+import { IComment } from "../types/user-type";
 
 export { CanceledError };
 
@@ -113,25 +113,9 @@ const deletePost = (postId: string) => {
   return { request, cancel: () => controller.abort() };
 };
 
-// הוספת תגובה לפוסט
-const addComment = (postId: string, text: string) => {
-  const controller = new AbortController();
-  const request = apiClient.post<ICommentWithAuthor>(`/posts/${postId}/comments`, { text }, {
-    signal: controller.signal
-  });
-  
-  return { request, cancel: () => controller.abort() };
-};
 
-// קבלת תגובות לפוסט
-const getPostComments = (postId: string) => {
-  const controller = new AbortController();
-  const request = apiClient.get<ICommentWithAuthor[]>(`/posts/${postId}/comments`, {
-    signal: controller.signal
-  });
-  
-  return { request, cancel: () => controller.abort() };
-};
+
+
 const toggleLike = (postId: string) => {
   const controller = new AbortController();
   const request = apiClient.post(`/posts/${postId}/like`, {}, {
@@ -147,8 +131,6 @@ const postService = {
   createPost,
   updatePost,
   deletePost,
-  addComment,
-  getPostComments,
   toggleLike
 };
 
