@@ -68,8 +68,6 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ user, onSave, onClo
       const response = await request;
 
       onSave(response.data);
-      console.log(response.data);
-      // userService.updateLoggedUser(response.data)
     } catch (err: any) {
       console.error('Error updating profile:', err);
       setError(err.response?.data?.message || 'Failed to update profile');

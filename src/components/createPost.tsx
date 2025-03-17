@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Box, Button, TextField, Alert, Typography, useTheme } from '@mui/material';
+import { Box, Button, TextField, Alert, Typography } from '@mui/material';
 import postService from '../services/post-service';
 import authService from '../services/auth-service';
 
@@ -16,7 +16,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentUser = authService.getCurrentUser();
-  const theme = useTheme();
+  // const theme = useTheme();
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);

@@ -8,8 +8,6 @@ import Register from '../pages/register';
 import Home from '../pages/Home';
 import Profile from '../pages/Profile';
 import MyPosts from '../pages/MyPosts';
-import PostDetails from '../pages/PostDetails';
-// import EditPost from '../pages/EditPost';
 
 // Layout
 import Layout from '../components/Layout';
@@ -80,27 +78,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ handleToggle, isDarkMode }) => {
         }
       />
       
-      <Route
-        path="/post/:postId"
-        element={
-          <PrivateRoute>
-            <Layout handleToggle={handleToggle} isDarkMode={isDarkMode}>
-              <PostDetails />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-      
-      {/* <Route
-        path="/edit-post/:postId"
-        element={
-          <PrivateRoute>
-            <Layout handleToggle={handleToggle} isDarkMode={isDarkMode}>
-              <EditPost />
-            </Layout>
-          </PrivateRoute>
-        }
-      /> */}
       
       {/* Default redirect to home */}
       <Route path="*" element={<Navigate to="/" />} />
