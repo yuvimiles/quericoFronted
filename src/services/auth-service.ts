@@ -67,7 +67,7 @@ const refreshToken = () => {
 // התנתקות
 const logout = () => {
   const controller = new AbortController();
-  const request = apiClient.post('/auth/logout', {}, {
+  const request = apiClient.post('/auth/logout',  {
     signal: controller.signal
   });
   

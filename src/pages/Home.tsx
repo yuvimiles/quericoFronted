@@ -52,7 +52,6 @@ const Home: React.FC = () => {
       prev.map((post) => (post._id === updatedPost._id ? updatedPost : post))
     );
   };
-  
   const handleLoadMore = () => {
     if (!loading && hasMore) {
       fetchPosts(page + 1);

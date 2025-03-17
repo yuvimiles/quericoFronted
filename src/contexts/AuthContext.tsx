@@ -37,27 +37,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
       const currentUser = authService.getCurrentUser();
-      
-      if (currentUser && authService.isAuthenticated()) {
+      if (currentUser) {
         setUser(currentUser);
-        
-        // Try to refresh token
-        // try {
-        //   const { request } = authService.refreshToken();
-        //   const response = await request;
-          
-        //   // Update auth data
-        //   authService.saveAuth(response.data);
-        //   setUser(response.data.user);
-        // } catch (err) {
-        //   console.error('Token refresh failed:', err);
-        //   // If refresh fails, we still keep the user logged in with current token
-        // }
       }
-      
       setIsLoading(false);
     };
-
     initAuth();
   }, []);
 
@@ -100,9 +84,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   // Logout function
-  const logout = () => {
+  const logout =async () => {
     try {
-      const { request } = authService.logout();
+      const { request } = await authService.logout();
       // We don't need to await this, as we want to log out immediately
       request.catch(err => console.error('Logout error:', err));
     } finally {
