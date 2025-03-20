@@ -17,7 +17,6 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentUser = authService.getCurrentUser();
   // const theme = useTheme();
-
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
   };

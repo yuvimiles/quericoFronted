@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { User, UserUpdateRequest } from '../types/user-type';
+import { User } from '../types/user-type';
 import userService from '../services/user-service';
 import {
   Box,
@@ -9,7 +9,6 @@ import {
   DialogContent,
   TextField,
   Avatar,
-  Typography,
   IconButton,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -60,11 +59,13 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ user, onSave, onClo
     try {
       setLoading(true);
       setError(null);
-
-      const updateData: UserUpdateRequest = { name, email };
-      if (profileImage) updateData.profileImage = profileImage;
-
-      const { request } = userService.updateUserProfile(user.id, updateData);
+      const formData = new FormData();
+      formData.append("name" , name)
+      formData.append("email" , email)
+      if (profileImage)
+      formData.append("profileImage" , profileImage)
+      
+      const { request } = userService.updateUserProfile(formData);
       const response = await request;
 
       onSave(response.data);

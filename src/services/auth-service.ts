@@ -9,12 +9,6 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface RegisterRequest {
-  name: string;
-  email: string;
-  password: string;
-}
-
 export interface AuthResponse {
   user: User;
   accessToken: string;
@@ -39,7 +33,7 @@ const loginWithGoogleToken = (credential: string) => {
   return { request, cancel: () => controller.abort() };
 };
 // הרשמה
-const register = (userData: RegisterRequest) => {
+const register = (userData: FormData) => {
   const controller = new AbortController();
   const request = apiClient.post<AuthResponse>('/auth/register', userData, {
     signal: controller.signal

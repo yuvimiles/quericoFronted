@@ -54,17 +54,20 @@ const Register: React.FC = () => {
       setLoading(true);
       setError('');
       setImageError('');
-
-      const { request } = authService.register({ name, email, password });
-      const response = await request;
-      
-      // Save the uploaded image or add it to the user profile if required
+      const formData = new FormData();
       if (profileImage) {
-        // Optionally, handle uploading the image
-        const formData = new FormData();
         formData.append('profileImage', profileImage);
         // Send this form data to your backend (replace with your logic for uploading the image)
       }
+      formData.append('name', name);
+      formData.append('email',email);
+      formData.append('password',password);
+
+      const { request } = authService.register(formData);
+      const response = await request;
+      
+      // Save the uploaded image or add it to the user profile if required
+      
       
       authService.saveAuth(response.data);
       navigate('/');

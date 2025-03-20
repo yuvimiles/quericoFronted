@@ -7,7 +7,6 @@ import Login from '../pages/login';
 import Register from '../pages/register';
 import Home from '../pages/Home';
 import Profile from '../pages/Profile';
-import MyPosts from '../pages/MyPosts';
 
 // Layout
 import Layout from '../components/Layout';
@@ -67,16 +66,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ handleToggle, isDarkMode }) => {
         }
       />
       
-      <Route
-        path="/my-posts"
-        element={
-          <PrivateRoute>
-            <Layout handleToggle={handleToggle} isDarkMode={isDarkMode}>
-              <MyPosts />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
+      
       
       
       {/* Default redirect to home */}

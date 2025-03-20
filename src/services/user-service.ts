@@ -26,11 +26,23 @@ const searchUsers = (query: string) => {
   
   return { request, cancel: () => controller.abort() };
 };
+const updateUserProfile = (updatedData: FormData) =>{
+  const controller = new AbortController();
+  const request = apiClient.post<User>(`/users/update`,updatedData ,{
+    signal: controller.signal,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+  
+  return { request, cancel: () => controller.abort() };
+}
 
 const userService = {
   getAllUsers,
   searchUsers,
-  updateLoggedUser
+  updateLoggedUser,
+  updateUserProfile
 };
 
 export default userService;

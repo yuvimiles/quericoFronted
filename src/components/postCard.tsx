@@ -33,7 +33,7 @@ interface PostCardProps {
 const PostCard: React.FC<PostCardProps> = ({ post, onDeletePost, onUpdatePost }) => {
   const [isLiked, setIsLiked] = useState<boolean>(() => {
     const currentUser = authService.getCurrentUser();
-    return currentUser ? post.likes.includes(currentUser.id) : false;
+    return currentUser ? post.likes.includes(currentUser.id || currentUser._id) : false;
   });
 
   const [likesCount, setLikesCount] = useState<number>(post.likes.length);
@@ -126,7 +126,10 @@ const PostCard: React.FC<PostCardProps> = ({ post, onDeletePost, onUpdatePost })
               alt={post.author.name}
             />
           }
-          subheader={formatDate(post.createdAt)}
+          subheader={<Box sx={{ display: "flex", flexDirection: "column" }}>
+          <Typography variant="h6">{post.author.name}</Typography> {/* Author's name */}
+          <Typography variant="body2">{formatDate(post.createdAt)}</Typography> {/* Post date */}
+        </Box>}
           action={
             isAuthor && (
               <Box sx={{ display: "flex", gap: 1 }}>
