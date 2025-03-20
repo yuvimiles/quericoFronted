@@ -68,9 +68,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (name:string , email: string, password: string) => {
     setIsLoading(true);
     setError(null);
-    
+    const formData = new FormData();
+      formData.append('name', name);
+      formData.append('email',email);
+      formData.append('password',password);
     try {
-      const { request } = authService.register({name ,email, password });
+      const { request } = authService.register(formData);
       const response = await request;
       
       authService.saveAuth(response.data);

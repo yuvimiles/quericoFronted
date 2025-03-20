@@ -27,4 +27,3 @@ export interface User {
     updatedAt: Date;
   }
   
-  // ממשק מורחב לתגובה עם פרטי המשתמש המגיב

@@ -10,7 +10,7 @@ const Home: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
-
+  
   const fetchPosts = async (pageNumber: number = 1) => {
     try {
       setLoading(true);
@@ -104,7 +104,7 @@ const Home: React.FC = () => {
               </Box>
             ) : (
               <Box sx={{ mt: 3 }}>
-                {posts.map(post => (
+                {posts.length > 0 &&posts.map(post => (
                   <PostCard key={post._id} post={post} onDeletePost={handlePostDeleted} onUpdatePost={handlePostUpdated} />
                 ))}
               </Box>

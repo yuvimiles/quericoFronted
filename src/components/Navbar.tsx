@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { AppBar, Toolbar, Button, Typography, Box, Avatar, useTheme } from "@mui/material";
 import logo from "../assets/logo.png";
@@ -7,17 +6,11 @@ import BedtimeIcon from '@mui/icons-material/Bedtime';
 import LightModeIcon from '@mui/icons-material/LightMode';
 
 export default function AppNavbar({ handleToggle, isDarkMode }: { handleToggle: () => void, isDarkMode: boolean }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { user, logout } = useAuth();
   const theme = useTheme(); // Get the current theme object
 
-  const handleAuth = () => {
-    setIsAuthenticated(!isAuthenticated);
-  };
-
   const handleLogout = () => {
     logout();
-    setIsAuthenticated(false);
   };
 
   return (
