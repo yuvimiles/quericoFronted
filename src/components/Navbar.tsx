@@ -33,6 +33,9 @@ export default function AppNavbar({ handleToggle, isDarkMode }: { handleToggle: 
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Button component={Link} to="/AiChat" sx={{ color: 'secondary.main', mr: 3 }}>
+            AI-Chat
+          </Button>
           <Button component={Link} to="/feed" sx={{ color: 'secondary.main', mr: 3 }}>
             Feed
           </Button>

@@ -7,7 +7,7 @@ import Login from '../pages/login';
 import Register from '../pages/register';
 import Home from '../pages/Home';
 import Profile from '../pages/Profile';
-import MyPosts from '../pages/MyPosts';
+import AiChat from '../pages/AiChat'
 
 // Layout
 import Layout from '../components/Layout';
@@ -57,6 +57,16 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ handleToggle, isDarkMode }) => {
       />
       
       <Route
+        path="/AiChat"
+        element={
+          <PrivateRoute>
+            <Layout handleToggle={handleToggle} isDarkMode={isDarkMode}>
+              <AiChat />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
         path="/profile"
         element={
           <PrivateRoute>
@@ -67,16 +77,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ handleToggle, isDarkMode }) => {
         }
       />
       
-      <Route
-        path="/my-posts"
-        element={
-          <PrivateRoute>
-            <Layout handleToggle={handleToggle} isDarkMode={isDarkMode}>
-              <MyPosts />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
+      
       
       
       {/* Default redirect to home */}
