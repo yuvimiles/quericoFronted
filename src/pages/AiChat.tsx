@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Box, TextField, IconButton, CircularProgress, Typography, Alert, useTheme } from "@mui/material";
+import { Box, TextField, IconButton, CircularProgress , Alert, useTheme } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import SmartToyIcon from "@mui/icons-material/SmartToy";
 import { useAuth } from "../contexts/AuthContext";
 import AIServices from "../services/AI-Chat-Service";
-import AttachFileIcon from '@mui/icons-material/AttachFile';
 import MyLocationIcon from "@mui/icons-material/MyLocation"; // Import location icon
+import ChatBubble  from "../components/animatedBubble.tsx";
 
 
 
@@ -15,33 +14,35 @@ const AiChat = () => {
     const [chat, setChat] = useState<{ role: string; content: string }[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [selectedModel, setSelectedModel] = useState(AI_MODELS[0]); // Default model
+    const [selectedModel, setSelectedModel] = useState(AI_MODELS[0]);
     const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
         null
       );
 
     const theme = useTheme();
-    const currentUserId = useAuth().user?.id;
+    const currentUser = useAuth().user;
 
-
-    const getLocation = () => {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              setLocation({
-                lat: position.coords.latitude,
-                lng: position.coords.longitude,
-              });
-            },
-            (error) => {
-              console.error("Error getting location:", error);
-            }
-          );
+    const toggleLocation = () => {
+        if (location) {
+            setLocation(null);
         } else {
-          console.error("Geolocation is not supported by this browser.");
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        setLocation({
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude,
+                        });
+                    },
+                    (error) => {
+                        console.error("Error getting location:", error);
+                    }
+                );
+            } else {
+                console.error("Geolocation is not supported by this browser.");
+            }
         }
-      };
+    };
     const sendMessage = async () => {
         if (!message.trim()) return;
     
@@ -49,33 +50,24 @@ const AiChat = () => {
         setChat(newChat);
         setMessage("");
         setLoading(true);
-      setError(null);
+        setError(null);
     
         try {
-            const formData = new FormData();
-            formData.append("message", message);
-            formData.append("model", selectedModel);
-            if(location) {
-            formData.append("location", JSON.stringify(location));
-            }
-            if (selectedFile) formData.append("file", selectedFile);
-
-            const { request } = AIServices.chatWithAI(formData);
+            const data = {
+                message,              // The user's message
+                model: selectedModel,  // The selected AI model
+                location: location ? location : null, // Location data, if available
+                history: newChat      // Chat history
+            };
+            const { request } = AIServices.chatWithAI(data);
             const res = await request;
-    
-            setChat([...newChat, { role: "assistant", content: res.data.data }]);
-            setSelectedFile(null); // Clear file after sending
+            setChat([...newChat, { role: "assistant", content: res.data.choices[0].message.content }]);
 
         } catch (error) {
             console.error("Error sending message:", error);
             setError("Failed to send message. Please try again.");
         } finally {
             setLoading(false);
-        }
-    };
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files.length > 0) {
-            setSelectedFile(event.target.files[0]);
         }
     };
     
@@ -97,6 +89,8 @@ const AiChat = () => {
                 border: `1px solid ${theme.palette.secondary.main}`,
             }}
         >
+                    
+            
             {error && (
                 <Alert severity="error" sx={{ mb: 2 }}>
                     {error}
@@ -105,28 +99,30 @@ const AiChat = () => {
 
             {/* Chat Messages */}
             <Box sx={{ flex: 1, overflowY: "auto", paddingBottom: 2 }}>
+            <ChatBubble message={import.meta.env.VITE_AI_MESSAGE} 
+            avatarSrc="https://randomuser.me/api/portraits/men/10.jpg" />
                 {chat.map((msg, index) => (
                     <Box
-                        key={index}
-                        sx={{
-                            display: "flex",
-                            justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
-                            marginBottom: "8px",
-                        }}
-                    >
-                        {msg.role === "assistant" && <SmartToyIcon sx={{ color: theme.palette.primary.main, marginRight: 1 }} />}
-                        <Typography
-                            sx={{
-                                padding: "8px 12px",
-                                borderRadius: "10px",
-                                maxWidth: "75%",
-                                backgroundColor: msg.role === "user" ? theme.palette.primary.main : theme.palette.secondary.main,
-                                color: msg.role === "user" ? "#000" : "#fff",
-                            }}
-                        >
-                            {msg.content}
-                        </Typography>
-                    </Box>
+                    key={index}
+                    sx={{
+                        display: "flex",
+                        justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
+                        alignItems: "center",
+                        marginBottom: "8px",
+                    }}
+                >
+                    {msg.role === "assistant" ? (
+                        <ChatBubble 
+                        message={msg.content}
+                        avatarSrc="https://randomuser.me/api/portraits/men/10.jpg"  // Use any avatar image URL
+                      />
+                    ) : (
+                        <ChatBubble 
+                        message={msg.content}
+                        avatarSrc={currentUser?.profileImage || import.meta.env.VITE_DEFAULT_USER_PHOTO}   // Use any avatar image URL
+                      />
+                    )}
+                </Box>
                 ))}
                 {loading && (
                     <Box sx={{ display: "flex", justifyContent: "center", marginTop: 1 }}>
@@ -155,6 +151,12 @@ const AiChat = () => {
                     minRows={3} // Minimum of 3 lines
                     maxRows={3} // Maximum of 3 lines (prevents expansion)
                     onChange={(e) => setMessage(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault(); // Prevents new line
+                            sendMessage();
+                        }
+                    }}
                     sx={{
                         flex: 5,
                         marginRight: 1,
@@ -162,11 +164,14 @@ const AiChat = () => {
                         input: { color: theme.palette.text.primary },
                     }}
                 />
-                        <IconButton color="primary" onClick={getLocation} sx={{
-                             border : `1px solid ${theme.palette.secondary.main}`
-                        }}>
-                        <MyLocationIcon />
-                        </IconButton>
+                        {/* Location Toggle Button */}
+                <IconButton 
+                    color={location ? "secondary" : "primary"} 
+                    onClick={toggleLocation} 
+                    sx={{ border: `1px solid ${theme.palette.secondary.main}` }}
+                >
+                    <MyLocationIcon />
+                </IconButton>
                 <Box sx={{ display: "flex" ,gap: 1, mt: 2 }}>
                     {/* Model Selection */}
                     <TextField
@@ -186,37 +191,6 @@ const AiChat = () => {
                         </option>
                           ))}
                     </TextField>
-
-                    {/* File Upload */}
-                    <IconButton
-                    color="primary"
-                    component="label"
-                    sx={{
-                        padding: 0,
-                        marginTop: 1,
-                        width: 40, // Adjust icon size
-                        height: 40,
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        backgroundColor: theme.palette.background.default,
-                        border : `1px solid ${theme.palette.secondary.main}`
-                    }}
-                    >
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        hidden
-                    />
-                    <AttachFileIcon />
-                    </IconButton>
-                    
-                    {selectedFile && (
-                        <Typography sx={{ fontSize: 14, color: "gray" }}>
-                            Selected: {selectedFile.name}
-                        </Typography>
-                    )}
                 </Box>
 
                 <IconButton color="primary" onClick={sendMessage} disabled={loading} sx={{

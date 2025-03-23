@@ -39,11 +39,9 @@ const Chat = () => {
       });
       socket.on('chatHistory', (chatHistory: ChatMessage[]) => {
         // Set the chat history in the messages state
-        console.log(chatHistory)
         setMessages(chatHistory);
       });
       socket.emit('getChatHistory', { senderId: currentUserId, receiverId: selectedUser._id });
-    //   console.log(messages)
 
       return () => {
         socket.off('message');

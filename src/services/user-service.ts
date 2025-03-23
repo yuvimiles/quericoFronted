@@ -14,7 +14,6 @@ const getAllUsers = () => {
 };
 
 const updateLoggedUser = (user: User)=> {
-  console.log(user)
   localStorage.setItem('user', JSON.stringify(user));
 }
 // חיפוש משתמשים (לפי שם משתמש)

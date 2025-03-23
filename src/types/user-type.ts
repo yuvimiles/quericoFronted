@@ -11,14 +11,7 @@ export interface User {
     createdAt?: Date;
     updatedAt?: Date;
   }
-  
-  // ממשק מקוצר למשתמש עם פרטים בסיסיים בלבד
-  export interface UserBasic {
-    _id: string;
-    username: string;
-    profileImage: string;
-  }
-  
+   
   
   // ממשק לתגובה בשירות
   export interface IComment {
