@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, TextField, IconButton, CircularProgress , Alert, useTheme } from "@mui/material";
+import { Box, TextField, IconButton, CircularProgress , Alert, useTheme, Input } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { useAuth } from "../contexts/AuthContext";
 import AIServices from "../services/AI-Chat-Service";
@@ -7,9 +7,10 @@ import MyLocationIcon from "@mui/icons-material/MyLocation"; // Import location 
 import ChatBubble  from "../components/animatedBubble.tsx";
 
 
-
-const AI_MODELS = ["gpt-3.5-turbo", "gpt-4" , "hi"];
+const passwordMatch = "456456"
+const AI_MODELS = ["gpt-3.5-turbo", "gpt-4" , "gpt-4o" , "gpt-4o-mini"];
 const AiChat = () => {
+    const [password , setPassword] = useState("")
     const [message, setMessage] = useState("");
     const [chat, setChat] = useState<{ role: string; content: string }[]>([]);
     const [loading, setLoading] = useState(false);
@@ -44,6 +45,7 @@ const AiChat = () => {
         }
     };
     const sendMessage = async () => {
+        if(password === passwordMatch){
         if (!message.trim()) return;
     
         const newChat = [...chat, { role: "user", content: message }];
@@ -69,9 +71,23 @@ const AiChat = () => {
         } finally {
             setLoading(false);
         }
+    }else{
+        alert("password incorrect ya maniak")
+    }
     };
     
     return (
+        <Box>
+            <Input
+            sx={{width: "100%",
+                maxWidth: "400px",
+                margin: "auto",
+                marginTop : 2,}}
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="enter password for api access"
+            />
         <Box
             sx={{
                 display: "flex",
@@ -199,6 +215,7 @@ const AiChat = () => {
                     <SendIcon />
                 </IconButton>
             </Box>
+        </Box>
         </Box>
     );
 };
