@@ -17,7 +17,6 @@ interface ChatMessage {
 const socket = io(import.meta.env.VITE_SERVER_API_URL); // your server URL
 const notificationSound = new Audio(import.meta.env.VITE_NOTIFICATION_SOUND);
 
-// Mock user data (replace this with actual data fetched from your backend)
 
 const Chat = () => {
   const theme = useTheme();

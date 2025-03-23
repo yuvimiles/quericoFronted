@@ -8,7 +8,7 @@ import Register from '../pages/register';
 import Home from '../pages/Home';
 import Profile from '../pages/Profile';
 import AiChat from '../pages/AiChat'
-
+import Chat from '../components/Chat';
 // Layout
 import Layout from '../components/Layout';
 
@@ -51,6 +51,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ handleToggle, isDarkMode }) => {
           <PrivateRoute>
             <Layout handleToggle={handleToggle} isDarkMode={isDarkMode}>
               <Home />
+              <Chat />
             </Layout>
           </PrivateRoute>
         }
@@ -62,6 +63,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ handleToggle, isDarkMode }) => {
           <PrivateRoute>
             <Layout handleToggle={handleToggle} isDarkMode={isDarkMode}>
               <AiChat />
+              <Chat />
             </Layout>
           </PrivateRoute>
         }
@@ -72,6 +74,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ handleToggle, isDarkMode }) => {
           <PrivateRoute>
             <Layout handleToggle={handleToggle} isDarkMode={isDarkMode}>
               <Profile />
+              <Chat />
             </Layout>
           </PrivateRoute>
         }

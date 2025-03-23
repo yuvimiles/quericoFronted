@@ -5,7 +5,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import { lightTheme, darkTheme } from './theme';
 import { useState } from 'react';
 import AppRoutes from './routes/AppRoutes';
-import Chat from './components/Chat';
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -20,7 +19,6 @@ function App() {
         <Router>
           <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
             <AppRoutes handleToggle={handleToggle} isDarkMode={isDarkMode} />
-            <Chat />
           </ThemeProvider>
         </Router>
       </AuthProvider>
