@@ -27,32 +27,41 @@ const Chat = () => {
   const [newMessage, setNewMessage] = useState<ChatMessage>({ senderId: '', message: '', timestamp: '' });
   const currentUser = authService.getCurrentUser();
   const currentUserId = currentUser?._id || currentUser?.id;
+ // Listen for messages only when a user is selected
+ 
 
+useEffect(() => {
+  fetchUsers();
+  socket.emit('userConnected', currentUserId);
+  socket.on('newMessage', (message: ChatMessage) => {
+    if(message.senderId!=currentUserId){
+    setMessages((prevMessages) => [...prevMessages, message]);
+    notificationSound.play();
+    }
+  });
+},[])
   useEffect(() => {
-    fetchUsers();
-    if (selectedUser) {
-      // Listen for messages only when a user is selected
-      socket.on('message', (message: ChatMessage) => {
-        setMessages((prevMessages) => [...prevMessages, message]);
-        notificationSound.play();
-      });
       socket.on('chatHistory', (chatHistory: ChatMessage[]) => {
         // Set the chat history in the messages state
         setMessages(chatHistory);
       });
+      if(selectedUser){
       socket.emit('getChatHistory', { senderId: currentUserId, receiverId: selectedUser._id });
-
+      }
       return () => {
-        socket.off('message');
         socket.off('chatHistory');
+        socket.off('disconnect');
+
       };
-    }
+    
   }, [selectedUser]);
 
+
+  
   const sendMessage = () => {
     if (newMessage.message.trim() && selectedUser) {
       // Emit the message to the selected user
-      socket.emit('sendMessage', { receiverId: selectedUser._id , senderId : newMessage.senderId , message: newMessage.message });
+      socket.emit('sendMessage', { receiverId: selectedUser._id , senderId : currentUserId , message: newMessage.message });
       setMessages((prevMessages) => [...prevMessages, { ...newMessage }]);
       setNewMessage({ senderId: '', message: '', timestamp: '' });
     }
@@ -113,7 +122,7 @@ const Chat = () => {
         <>
           {!selectedUser ? (
             // Display list of users
-            <Box>
+            <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
               
               <List>
                 {users.filter((user) => user._id !== currentUserId).map((user) => (
