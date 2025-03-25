@@ -68,6 +68,7 @@ const Home: React.FC = () => {
   };
 
   const handlePostUpdated = (updatedPost: Post) => {
+    console.log(updatedPost)
     setPosts((prev) =>
       prev.map((post) => (post._id === updatedPost._id ? updatedPost : post))
     );

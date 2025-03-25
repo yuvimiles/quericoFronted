@@ -23,6 +23,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CommentDialog from "./CommentForm";
 import { IComment } from "../types/user-type";
 import commentService from "../services/comment-service";
+import { useTheme } from '@mui/material/styles';
 
 interface PostCardProps {
   post: Post;
@@ -40,6 +41,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onDeletePost, onUpdatePost })
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
   const [isCommentOpen, setIsCommentOpen] = useState<boolean>(false);
+  const theme = useTheme();
 
   const currentUser = authService.getCurrentUser();
   const isAuthor = currentUser && post.author._id === currentUser.id;
@@ -188,7 +190,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onDeletePost, onUpdatePost })
           mb: 2,
           p: 2,
           borderRadius: 2,
-          bgcolor: "#f5f5f5",
+          bgcolor: theme.palette.background.paper,
         }}
       >
         <Avatar

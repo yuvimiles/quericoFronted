@@ -30,6 +30,7 @@ const AiChat = () => {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
+                        console.log("location is - "+position.coords.latitude ,  position.coords.longitude)
                         setLocation({
                             lat: position.coords.latitude,
                             lng: position.coords.longitude,

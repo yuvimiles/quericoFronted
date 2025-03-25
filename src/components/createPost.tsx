@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { Box, Button, TextField, Alert, Typography } from '@mui/material';
 import postService from '../services/post-service';
 import authService from '../services/auth-service';
+import { useTheme,alpha  } from '@mui/material/styles';
+
 
 interface CreatePostProps {
   onPostCreated?: (post: any) => void;
@@ -13,6 +15,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const theme = useTheme();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentUser = authService.getCurrentUser();
@@ -89,7 +92,9 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
   return (
     <Box
       sx={{
-        bgcolor: 'white',
+        bgcolor: theme.palette.mode === 'dark' 
+        ? alpha(theme.palette.grey[800], 0.9) 
+        : alpha(theme.palette.common.white, 0.95),
         borderRadius: 2,
         boxShadow: 2,
         p: 4,

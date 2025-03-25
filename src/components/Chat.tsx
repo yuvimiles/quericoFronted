@@ -199,6 +199,12 @@ useEffect(() => {
               <TextField
                 value={newMessage.message}
                 onChange={(e) => setNewMessage({senderId : currentUserId , message : e.target.value , timestamp : new Date().toISOString()})}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault(); // Prevents new line in the TextField
+                    sendMessage(); // Call your send function
+                  }
+                }}
                 placeholder="Type a message"
                 fullWidth
                 variant="outlined"

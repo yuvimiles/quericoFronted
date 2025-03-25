@@ -67,7 +67,6 @@ const EditPost: React.FC<EditPostProps> = ({ post, onPostUpdated, onClose }) => 
       setError("Please add some text or an image");
       return;
     }
-
     try {
       setSubmitting(true);
       setError(null);
